@@ -1,0 +1,375 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Python 考古題複習</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+/* Layout: left-aligned masthead + one working column (max ~860px); setup card, then one question card at a time.
+   Palette: P-05 赭石印刷 light scheme, single theme by design. */
+:root{
+  --bg:#FBF6EF; --ink:#31241E; --ink-2:#6B5A4E; --panel:#FFFDFA; --tint:#F0E4D4; --tint-2:#FDF8F1; --line:#E0D0BB;
+  --accent:#A8432A; --accent-tint:#F7E4DD; --olive:#5B6B4E; --olive-tint:#E7EDDD; --brown:#8A5A24; --brown-tint:#F3E6D2;
+  --f-display:'Noto Serif TC','Songti TC','PMingLiU',serif;
+  --f-body:'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:860px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.3}
+
+.mast{padding-block:32px 20px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink)}
+.eyebrow{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+.mast h1{font-size:clamp(28px,5.4vw,40px);font-weight:700}
+.mast p.sub{margin:6px 0 0;color:var(--ink-2);font-size:14.5px}
+.stats{display:flex;gap:20px;font-variant-numeric:tabular-nums}
+.stat{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-display);font-size:26px;line-height:1.1}
+.stat span{font-size:12.5px;color:var(--ink-2)}
+.stat.warn b{color:var(--accent)}
+
+.tabs{display:flex;gap:4px;margin:0;padding:0;overflow-x:auto;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:12px 16px;font-weight:500;color:var(--ink-2);white-space:nowrap;min-height:44px}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+main{padding-top:24px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px}
+.setup{display:grid;gap:20px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-weight:700;font-size:14.5px;padding:0;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.chip span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--tint-2);border-radius:999px;padding:7px 14px;font-size:14.5px;min-height:40px}
+.chip span small{color:var(--ink-2);font-size:12px;font-variant-numeric:tabular-nums}
+.chip input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip input:checked+span small{color:#D9CBB8}
+.chip input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.linkish{background:none;border:0;color:var(--accent);text-decoration:underline;padding:4px 2px;font-size:13.5px}
+.row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.count{font-size:15px;color:var(--ink-2)} .count b{color:var(--ink);font-size:20px;font-family:var(--f-display)}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:4px;padding:11px 22px;font-weight:700;min-height:46px}
+.btn:hover{background:#4a382e}
+.btn.ghost{background:transparent;color:var(--ink)} .btn.ghost:hover{background:var(--tint)}
+.btn.accent{background:var(--accent);border-color:var(--accent)} .btn.accent:hover{background:#8d3721}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+.prog{display:flex;align-items:center;gap:14px;margin-bottom:14px;font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:8px;background:var(--tint);border-radius:99px;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:var(--olive)}
+.qhead{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;margin-bottom:10px}
+.qno{font-family:var(--f-display);font-size:22px;font-weight:700}
+.tag{font-size:12.5px;border:1px solid var(--line);background:var(--tint-2);border-radius:3px;padding:1px 8px;color:var(--ink-2)}
+.tag.ex{background:var(--tint);color:var(--ink)}
+.prompt{margin:0 0 12px;font-size:16.5px}
+pre.code{margin:0 0 16px;background:var(--tint);border:1px solid var(--line);border-radius:4px;padding:14px 16px;overflow-x:auto;font-family:var(--f-mono);font-size:14.5px;line-height:1.65;tab-size:4;max-width:100%}
+.t-k{color:var(--accent);font-weight:500}.t-b{color:var(--brown)}.t-s{color:var(--olive)}.t-c{color:#8a7b6d;font-style:italic}.t-n{color:var(--brown)}
+.opts{display:grid;gap:8px;margin:0 0 16px;padding:0;list-style:none}
+.opt{width:100%;text-align:left;display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:start;background:var(--panel);border:1.5px solid var(--line);border-radius:5px;padding:10px 12px;min-height:48px}
+.opt:hover:not([disabled]){border-color:var(--ink);background:var(--tint-2)}
+.opt .l{font-family:var(--f-mono);font-weight:500;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13.5px;background:var(--tint-2)}
+.opt .t{font-family:var(--f-mono);font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere;padding-top:2px;min-width:0}
+.opt .m{font-size:12.5px;font-weight:700;padding-top:3px;white-space:nowrap}
+.opt.sel{border-color:var(--ink);background:var(--tint)} .opt.sel .l{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.opt.ok{border-color:var(--olive);background:var(--olive-tint)} .opt.ok .l{background:var(--olive);color:#fff;border-color:var(--olive)} .opt.ok .m{color:var(--olive)}
+.opt.no{border-color:var(--accent);background:var(--accent-tint)} .opt.no .l{background:var(--accent);color:#fff;border-color:var(--accent)} .opt.no .m{color:var(--accent)}
+.opt.sup .t::after{content:"（補充選項）";font-family:var(--f-body);font-size:12px;color:var(--brown);margin-left:6px}
+.fb{border-left:5px solid var(--olive);background:var(--olive-tint);border-radius:0 5px 5px 0;padding:14px 16px;margin-bottom:16px}
+.fb.bad{border-left-color:var(--accent);background:var(--accent-tint)}
+.fb h3{font-size:17px;margin-bottom:4px}
+.fb p{margin:6px 0 0}
+.fb p.off{font-size:13.5px;color:var(--ink-2)}
+.flag{margin-top:10px!important;padding:8px 12px;background:var(--brown-tint);border:1px solid #E2CFA9;border-radius:4px;font-size:14.5px}
+.nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.nav .grp{display:flex;gap:10px;flex-wrap:wrap}
+.hint{font-size:12.5px;color:var(--ink-2);margin-top:12px}
+kbd{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);background:var(--tint-2);border-radius:3px;padding:0 5px}
+
+.score{display:grid;grid-template-columns:auto 1fr;gap:6px 24px;align-items:end;margin-bottom:20px}
+.score .big{font-family:var(--f-display);font-size:clamp(44px,12vw,72px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.score .big small{font-size:.4em;color:var(--ink-2);font-weight:600}
+.score p{margin:0;color:var(--ink-2)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px;margin:8px 0 18px}
+.tbl th,.tbl td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl th{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.tbl td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl .bar{height:7px;min-width:70px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 18px}
+.pill{border:1px solid var(--accent);color:var(--accent);background:var(--accent-tint);border-radius:4px;padding:3px 10px;font-size:13.5px;min-height:34px}
+.pill:hover{background:var(--accent);color:#fff}
+h2.sec{font-size:19px;margin:6px 0 4px}
+
+.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin-bottom:16px}
+.filters label{display:flex;flex-direction:column;font-size:13px;color:var(--ink-2);gap:3px}
+select,input[type=search]{font:inherit;font-size:15px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 10px;min-height:42px;max-width:100%}
+.rv{border:1px solid var(--line);background:var(--panel);border-radius:5px;margin-bottom:8px}
+.rv summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;min-height:46px}
+.rv summary::-webkit-details-marker{display:none}
+.rv summary::before{content:"▸";color:var(--accent);width:14px}
+.rv[open] summary::before{content:"▾"}
+.rv .sm{flex:1 1 220px;min-width:0;font-size:14.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv .body{padding:4px 16px 16px;border-top:1px dashed var(--line)}
+.rv .opts{margin-top:10px}
+.rv .opt{cursor:default}
+.rv .wr{font-size:12.5px;color:var(--accent);font-weight:700}
+.empty{padding:28px 8px;color:var(--ink-2);text-align:center}
+@media (max-width:520px){
+  .stats{gap:14px} .card{padding:16px 14px} pre.code{font-size:13px;padding:12px}
+  .opt{grid-template-columns:30px 1fr} .opt .m{grid-column:2;padding-top:0}
+  .score{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s ease}}
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <p class="eyebrow">NTU GenEdu5010 · Programming and Web Scraping</p>
+      <h1>Python 考古題複習</h1>
+      <p class="sub">114-1 期中考與 114-2 Exam 1，共 128 題，每題附詳解，答案已對照官方解答。</p>
+    </div>
+    <div class="stats" aria-label="題庫統計">
+      <div class="stat"><b id="st-total">128</b><span>題庫</span></div>
+      <div class="stat warn"><b id="st-wrong">0</b><span>錯題本</span></div>
+    </div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="功能">
+    <button class="tab" role="tab" id="tab-quiz" aria-selected="true" aria-controls="view-quiz">練習</button>
+    <button class="tab" role="tab" id="tab-review" aria-selected="false" aria-controls="view-review">詳解總覽</button>
+  </div>
+  <main>
+    <section id="view-quiz" role="tabpanel" aria-labelledby="tab-quiz"></section>
+    <section id="view-review" role="tabpanel" aria-labelledby="tab-review" hidden></section>
+  </main>
+</div>
+
+<script>
+const DATA=[{"e": 1, "n": 1, "pts": 1, "topic": "條件與布林值", "q": "下列程式碼的輸出為何？", "code": "x = 15\nif x > 10:\n    print(\"High\")\nelif x > 5:\n    print(\"Medium\")\nelse:\n    print(\"Low\")", "opts": ["High", "Medium", "Low", "High Medium"], "ans": ["A"], "exp": "x = 15 大於 10，第一個條件成立，印出 High。if / elif / else 只會執行第一個成立的分支，後面的 elif (x > 5 也成立) 會被直接跳過，所以不會印出 Medium。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 1, "n": 2, "pts": 1, "topic": "List comprehension", "q": "下列程式碼的輸出為何？", "code": "result = [x * 2 for x in range(3)]\nprint(result)", "opts": ["[0, 1, 2]", "[0, 2, 4]", "[2, 4, 6]", "[1, 2, 3]"], "ans": ["B"], "exp": "range(3) 產生 0、1、2，每個數乘以 2 得到 0、2、4。range(n) 從 0 開始，到 n − 1 為止。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 3, "pts": 1, "topic": "break / continue", "q": "下列程式碼的輸出為何？", "code": "for i in range(5):\n    if i == 3:\n        break\n    print(i, end=\" \")", "opts": ["0 1 2 3", "0 1 2", "0 1 2 3 4", "1 2 3", "0 1 2 4"], "ans": ["B"], "exp": "i 依序為 0、1、2 時都會印出；i 等於 3 時先執行 break，直接結束整個迴圈，3 不會被印出。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 4, "pts": 1, "topic": "函式", "q": "下列哪一個敘述能正確定義帶有預設參數值的函式？", "code": null, "opts": ["def func(x = 5, y):", "def func(x, y = 5):", "def func(x, y == 5):", "def func(x, default y = 5):"], "ans": ["B"], "exp": "有預設值的參數必須放在沒有預設值的參數後面。A 把有預設值的 x 放在 y 前面，會產生 SyntaxError；C 的 == 是比較運算子，不是設定預設值；D 的 default 不是 Python 關鍵字。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 5, "pts": 1, "topic": "串列操作", "q": "下列程式碼的輸出為何？", "code": "nums = [3, 1, 4, 1, 5]\nprint(sorted(nums))\nprint(nums)", "opts": ["[1, 1, 3, 4, 5] and [1, 1, 3, 4, 5]", "[1, 1, 3, 4, 5] and [3, 1, 4, 1, 5]", "[3, 1, 4, 1, 5] and [1, 1, 3, 4, 5]", "Error"], "ans": ["B"], "exp": "sorted() 回傳一個新的已排序串列，不會改動原串列。所以第一行印出排序後的結果，第二行 nums 仍是原本的順序。對照：list.sort() 才會直接改動原串列，且回傳 None。", "alt": null, "flaw": null, "note": "輸出是兩行；選項以「and」把兩行連在一起表示。", "off": "B"}, {"e": 1, "n": 6, "pts": 1, "topic": "break / continue", "q": "迴圈中的 continue 敘述會做什麼？", "code": null, "opts": ["Exits the loop entirely", "Skips the rest of the current iteration and moves to the next", "Restarts the loop from the beginning", "Pauses the loop execution"], "ans": ["B"], "exp": "continue 會略過本輪迴圈中 continue 之後的程式碼，直接進入下一輪。A 描述的是 break；Python 沒有「重新開始迴圈」或「暫停迴圈」的語句。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 7, "pts": 1, "topic": "可變性與拷貝", "q": "下列程式碼的輸出為何？", "code": "a = [1, 2, 3]\nb = a[:]\nb.append(4)\nprint(a)", "opts": ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 3, [4]]", "Error"], "ans": ["A"], "exp": "a[:] 是完整切片，會建立一個內容相同的新串列（淺拷貝），b 與 a 是兩個不同的物件。對 b 做 append 不會影響 a，所以 a 仍是 [1, 2, 3]。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 1, "n": 8, "pts": 1, "topic": "變數作用域", "q": "下列程式碼的輸出為何？", "code": "x = 5\ndef func():\n    x = 10\n    print(x)\nfunc()\nprint(x)", "opts": ["10 10", "10 5", "5 10", "5 5"], "ans": ["B"], "exp": "函式內的 x = 10 會建立一個區域變數，與外面的全域變數 x 無關。func() 內印出 10，函式結束後區域 x 消失，外面的 x 仍是 5。兩個 print 各占一行，選項以空白表示。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 9, "pts": 1, "topic": "List comprehension", "q": "下列何者能建立 0 到 4 的平方串列？", "code": null, "opts": ["[x * x for x in range(5)]", "[x ** 2 for x in range(0, 5)]", "[x ** 2 for x in [0, 1, 2, 3, 4]]", "All of the above"], "ans": ["D"], "exp": "三種寫法結果都是 [0, 1, 4, 9, 16]。x * x 與 x ** 2 相同；range(5) 與 range(0, 5) 相同（起點預設為 0）；第三個則直接列出 0 到 4。", "alt": null, "flaw": null, "note": null, "off": "D"}, {"e": 1, "n": 10, "pts": 1, "topic": "zip / enumerate", "q": "下列程式碼的輸出為何？", "code": "names = [\"Alice\", \"Bob\", \"Charlie\"]\nages = [25, 30, 35]\nfor name, age in zip(names, ages):\n    print(f\"{name}:{age}\", end=\" \")", "opts": ["Alice 25 Bob 30 Charlie 35", "Alice:25 Bob:30 Charlie:35", "(Alice, 25) (Bob, 30) (Charlie, 35)", "Error"], "ans": ["B"], "exp": "zip() 把兩個串列對應位置的元素配成一組，迴圈每次取出一組 (name, age)。f-string 把格式寫成 name:age，並以 end=\" \" 讓每筆之間用空白隔開。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 11, "pts": 1, "topic": "break / continue", "q": "下列程式碼的輸出為何？", "code": "for i in range(10):\n    if i % 2 == 0:\n        continue\n    if i > 5:\n        break\n    print(i, end=\" \")", "opts": ["1 3 5 7 9", "1 3 5", "0 2 4 6", "1 3 5 7"], "ans": ["B"], "exp": "偶數 (i % 2 == 0) 會被 continue 跳過，只剩奇數：1、3、5 都會印出。i 到了 7 時 7 > 5 成立，執行 break 結束迴圈，7 沒有印出。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 12, "pts": 1, "topic": "字串", "q": "下列程式碼的輸出為何？", "code": "x = \"hello\"\nprint(x.upper())\nprint(x)", "opts": ["HELLO and HELLO", "HELLO and hello", "hello and hello", "hello and HELLO"], "ans": ["B"], "exp": "字串是不可變 (immutable) 的，upper() 不會改動原字串，而是回傳一個新字串。所以第一行印出 HELLO，x 本身仍是 hello。", "alt": null, "flaw": null, "note": "輸出是兩行；選項以「and」連接。", "off": "B"}, {"e": 1, "n": 13, "pts": 1, "topic": "List comprehension", "q": "下列程式碼的輸出為何？", "code": "text = \"Python\"\nresult = [char for char in text if char in \"aeiou\"]\nprint(result)", "opts": ["['P', 'y', 't', 'h', 'n']", "['o']", "['P', 'o']", "[]"], "ans": ["B"], "exp": "逐字檢查 \"Python\"，只有 'o' 出現在 \"aeiou\" 中（注意大小寫：'P' 與 'y' 都不是母音）。所以結果是 ['o']。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 14, "pts": 1, "topic": "串列操作", "q": "sorted([3, 1, 2], reverse=True) 會回傳什麼？", "code": "sorted([3, 1, 2], reverse=True)", "opts": ["[1, 2, 3]", "[3, 2, 1]", "[2, 1, 3]", "[3, 1, 2]"], "ans": ["B"], "exp": "reverse=True 代表由大到小排序，回傳 [3, 2, 1]。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 15, "pts": 1, "topic": "for / while 迴圈", "q": "下列程式碼的輸出為何？", "code": "count = 0\nwhile count < 3:\n    print(count, end=\" \")\n    count += 1", "opts": ["1 2 3", "0 1 2", "0 1 2 3", "1 2"], "ans": ["B"], "exp": "count 從 0 開始，每輪先印出再加 1。當 count 變成 3 時，count < 3 不成立，迴圈結束，所以印出 0 1 2。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 16, "pts": 1, "topic": "變數作用域", "q": "下列程式碼的輸出為何？", "code": "x = 10\ndef modify():\n    global x\n    x = 20\nmodify()\nprint(x)", "opts": ["10", "20", "Error", "None"], "ans": ["B"], "exp": "global x 宣告函式內的 x 指的是全域變數，所以 x = 20 直接修改了全域的 x。呼叫 modify() 之後再印出 x，得到 20。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 17, "pts": 1, "topic": "List comprehension", "q": "下列程式碼的輸出為何？", "code": "result = [x for x in range(10) if x % 3 == 0]\nprint(result)", "opts": ["[3, 6, 9]", "[0, 3, 6, 9]", "[1, 4, 7, 10]", "[0, 3, 6, 9, 12]"], "ans": ["B"], "exp": "range(10) 是 0 到 9，其中能被 3 整除的有 0、3、6、9（0 也能被 3 整除，餘數為 0）。range(10) 不含 10，所以也不會有 12。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 18, "pts": 1, "topic": "字串", "q": "下列程式碼的輸出為何？", "code": "s = \"abc\"\nprint(s * 2 + \"d\")", "opts": ["aabbccd", "abcabcd", "abcabcd", "abcdabcd"], "ans": ["B"], "exp": "運算順序是先乘後加：s * 2 得到 \"abcabc\"，再接上 \"d\"，結果為 abcabcd。（本題 B、C 選項文字相同，答 B 或 C 皆視為正確。）", "alt": [["C"]], "flaw": null, "note": "原試卷的選項 B 與 C 文字相同。", "off": "B"}, {"e": 1, "n": 19, "pts": 1, "topic": "函式", "q": "下列程式碼的輸出為何？", "code": "def func(a, b=2, c=3):\n    return a + b + c\nprint(func(1, c=5))", "opts": ["6", "8", "9", "Error"], "ans": ["B"], "exp": "func(1, c=5)：a 取 1，b 沒有給值，使用預設值 2，c 以關鍵字參數指定為 5。1 + 2 + 5 = 8。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 20, "pts": 1, "topic": "zip / enumerate", "q": "list(zip([1, 2], [3, 4])) 會回傳什麼？", "code": "list(zip([1, 2], [3, 4]))", "opts": ["[1, 2, 3, 4]", "[[1, 3], [2, 4]]", "[(1, 3), (2, 4)]", "[(1, 2), (3, 4)]"], "ans": ["C"], "exp": "zip 把各串列相同位置的元素配成元組：第 0 個位置是 (1, 3)，第 1 個位置是 (2, 4)，轉成串列後為 [(1, 3), (2, 4)]。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 21, "pts": 1, "topic": "break / continue", "q": "下列程式碼的輸出為何？", "code": "i = 0\nwhile i < 5:\n    i += 1\n    if i == 3:\n        continue\n    print(i, end=\" \")", "opts": ["0 1 2 4 5", "1 2 3 4 5", "1 2 4 5", "0 1 2 3 4"], "ans": ["C"], "exp": "i 先加 1 再判斷，所以印出的是 1 到 5。i 等於 3 時執行 continue，跳過 print，所以 3 沒有被印出，輸出 1 2 4 5。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 22, "pts": 1, "topic": "List comprehension", "q": "下列程式碼的輸出為何？", "code": "nums = [1, 2, 3, 4, 5]\nresult = [n for n in nums if n > 2]\nprint(len(result))", "opts": ["2", "3", "4", "5"], "ans": ["B"], "exp": "篩選出大於 2 的元素：3、4、5，共 3 個，len(result) 為 3。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 23, "pts": 1, "topic": "串列操作", "q": "關於 sorted() 函式，下列哪一個敘述正確？", "code": null, "opts": ["It modifies the original list", "It returns a new sorted list", "It only works with numbers", "It requires two arguments"], "ans": ["B"], "exp": "sorted() 會回傳新的已排序串列，原串列不變（A 錯）。它也能排序字串等其他可比較的資料（C 錯），且只需要一個必要參數，key 與 reverse 都是選填（D 錯）。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 24, "pts": 1, "topic": "zip / enumerate", "q": "下列程式碼的輸出為何？", "code": "text = \"Hello\"\nfor i, char in enumerate(text):\n    if i == 2:\n        break\n    print(char, end=\"\")", "opts": ["Hel", "He", "Hello", "H"], "ans": ["B"], "exp": "enumerate 同時給出索引與字元：i = 0 印 H，i = 1 印 e，i = 2 時 break 跳出，所以輸出 He（end=\"\" 代表不留空白）。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 25, "pts": 1, "topic": "函式", "q": "下列程式碼的輸出為何？", "code": "def func(x=[]):\n    x.append(1)\n    return x\nprint(func())\nprint(func())", "opts": ["[1] and [1]", "[1] and [1, 1]", "[1] and []", "Error"], "ans": ["B"], "exp": "預設參數值只在函式定義時建立一次，之後每次呼叫（沒給參數時）都共用同一個串列。第一次呼叫得到 [1]，第二次在同一個串列上再加一個 1，得到 [1, 1]。這是常見的陷阱，慣用寫法是預設用 None，再在函式內建立新串列。", "alt": null, "flaw": null, "note": "輸出是兩行；選項以「and」連接。", "off": "B"}, {"e": 1, "n": 26, "pts": 1, "topic": "List comprehension", "q": "下列程式碼的輸出為何？", "code": "result = [(x, y) for x in [1, 2] for y in [3, 4]]\nprint(result)", "opts": ["[(1, 2), (3, 4)]", "[(1, 3), (1, 4), (2, 3), (2, 4)]", "[(1, 2, 3, 4)]", "[1, 2, 3, 4]"], "ans": ["B"], "exp": "兩個 for 是巢狀的：外層 x 取 1 時，內層 y 依序取 3、4，得到 (1, 3)、(1, 4)；接著 x 取 2，得到 (2, 3)、(2, 4)。共 2 × 2 = 4 組。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 27, "pts": 1, "topic": "切片", "q": "下列程式碼的輸出為何？", "code": "s = \"programming\"\nprint(s[2:8:2])", "opts": ["ogm", "ogam", "prog", "ormig", "以上皆非"], "ans": ["E"], "exp": "「programming」各字元的索引：p0 r1 o2 g3 r4 a5 m6 m7 i8 n9 g10。s[2:8:2] 從索引 2 開始、每隔 2 個取一次、到索引 8 之前為止，取到索引 2、4、6，也就是 o、r、m，輸出 orm。原試卷的選項 A 到 D 都不是 orm，官方解答也標示為「無解」，所以這裡補上「以上皆非」以利練習。", "alt": null, "flaw": "原試卷選項 A 至 D 均不正確（實際輸出為 orm），官方解答為「無解」，已補上選項 E 以利練習。", "note": null, "off": "無解"}, {"e": 1, "n": 28, "pts": 1, "topic": "字元與編碼", "q": "chr(ord('A') + 1) 會回傳什麼？", "code": "chr(ord('A') + 1)", "opts": ["A", "B", "66", "Error"], "ans": ["B"], "exp": "ord('A') 是 65（A 的 ASCII 編碼），加 1 得 66，chr(66) 把編碼轉回字元 'B'。若只做 ord('A') + 1 則會得到數字 66。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 29, "pts": 1, "topic": "可變性與拷貝", "q": "下列程式碼的輸出為何？", "code": "x = [1, 2, 3]\ny = x\nx = [4, 5, 6]\nprint(y)", "opts": ["[1, 2, 3]", "[4, 5, 6]", "[1, 2, 3, 4, 5, 6]", "Error"], "ans": ["A"], "exp": "y = x 讓 y 指向 x 原本指的串列 [1, 2, 3]。接著 x = [4, 5, 6] 是把 x 重新指向另一個新串列，並沒有修改原串列，所以 y 仍指向 [1, 2, 3]。對照：x.append() 這類原地修改才會連動 y。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 1, "n": 30, "pts": 1, "topic": "break / continue", "q": "下列程式碼的輸出為何？", "code": "for i in range(3):\n    for j in range(2):\n        if i == j:\n            break\n        print(f\"{i}{j}\", end=\" \")", "opts": ["00 01 10 11 20 21", "01 10 20 21", "00 11", "01 12 20", "以上皆非"], "ans": ["E"], "exp": "逐步追蹤：i = 0 時，j = 0 立即 i == j，break 離開內層迴圈，什麼都沒印；i = 1 時，j = 0 印出 10，j = 1 時 i == j 而 break；i = 2 時，j = 0 印出 20，j = 1 印出 21。輸出是 10 20 21。break 只會跳出最內層迴圈。官方解答是 B（01 10 20 21），但那其實是把 break 改成 continue 時的輸出（continue 只跳過 i == j 的那一輪，所以 01 也會印出）。依試卷上實際印的 break，輸出是 10 20 21，A 至 D 都不符，所以這裡 B 與補充的 E 都視為正確。", "alt": [["B"]], "flaw": "官方解答為 B，但依試卷印出的程式（break）實際輸出是 10 20 21；B 是改成 continue 後的輸出。本題 B 與補充選項 E 皆視為正確。", "note": null, "off": "B"}, {"e": 1, "n": 31, "pts": 1, "topic": "串列操作", "q": "下列程式碼的輸出為何？", "code": "nums = [5, 2, 8, 1, 9]\nnums.sort()\nprint(nums[2])", "opts": ["2", "8", "5", "1"], "ans": ["C"], "exp": "sort() 直接把串列改成由小到大：[1, 2, 5, 8, 9]。索引 2（第三個）是 5。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 32, "pts": 1, "topic": "函式", "q": "下列程式碼的輸出為何？", "code": "def func(a, b=5):\n    return a * b\nprint(func(3))", "opts": ["3", "8", "15", "Error"], "ans": ["C"], "exp": "只傳入 a = 3，b 使用預設值 5，回傳 3 × 5 = 15。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 33, "pts": 1, "topic": "可變性與拷貝", "q": "下列何者能建立串列 original 的拷貝？", "code": null, "opts": ["original[:]", "original.copy()", "list(original)", "All of the above"], "ans": ["D"], "exp": "三種寫法都會建立 original 的淺拷貝：切片 [:]、串列的 copy() 方法、以及用 list() 建構新串列。", "alt": null, "flaw": null, "note": null, "off": "D"}, {"e": 1, "n": 34, "pts": 1, "topic": "字串", "q": "下列程式碼的輸出為何？", "code": "text = \"hello world\"\nwords = text.split()\nprint(len(words))", "opts": ["11", "2", "1", "10"], "ans": ["B"], "exp": "split() 不帶參數時，以空白切開字串，得到 ['hello', 'world']，共 2 個元素。11 是字串的長度 (len(text))。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 35, "pts": 1, "topic": "List comprehension", "q": "下列程式碼的輸出為何？", "code": "nums = [1, 2, 3, 4, 5]\nresult = [x for x in nums if x % 2 == 0]\nprint(sum(result))", "opts": ["15", "6", "9", "4"], "ans": ["B"], "exp": "偶數有 2 和 4，加總為 6。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 36, "pts": 1, "topic": "字元與編碼", "q": "下列程式碼的輸出為何？", "code": "for i in \"abc\":\n    print(ord(i), end=\" \")", "opts": ["a b c", "0 1 2", "97 98 99", "67 66 65"], "ans": ["C"], "exp": "ord() 回傳字元的編碼：'a' 是 97，'b' 是 98，'c' 是 99。小寫字母的編碼從 97 起算，大寫 A 是 65。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 37, "pts": 1, "topic": "變數作用域", "q": "下列程式碼的輸出為何？", "code": "x = 5\ndef test():\n    print(x)\n    x = 10\ntest()", "opts": ["5", "10", "5 and then 10", "Error (UnboundLocalError)"], "ans": ["D"], "exp": "只要函式內任何地方對 x 做了指派 (x = 10)，Python 就把 x 視為這個函式的區域變數。於是 print(x) 在 x 被指派之前就讀取它，引發 UnboundLocalError，並不會去讀外面的全域 x = 5。", "alt": null, "flaw": null, "note": null, "off": "D"}, {"e": 1, "n": 38, "pts": 1, "topic": "zip / enumerate", "q": "下列程式碼的輸出為何？", "code": "a = [1, 2]\nb = [3, 4]\nc = list(zip(a, b))\nprint(c[0][1])", "opts": ["1", "2", "3", "4"], "ans": ["C"], "exp": "c = [(1, 3), (2, 4)]。c[0] 是 (1, 3)，再取索引 1 的元素是 3。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 39, "pts": 1, "topic": "串列操作", "q": "下列程式碼的輸出為何？", "code": "nums = [3, 1, 4, 1, 5]\nresult = sorted(nums, reverse=True)[:3]\nprint(result)", "opts": ["[1, 1, 3]", "[5, 4, 3]", "[3, 4, 5]", "[5, 3, 1]"], "ans": ["B"], "exp": "由大到小排序得 [5, 4, 3, 1, 1]，再用切片 [:3] 取前三個，得 [5, 4, 3]。這是「取前 N 大」的常見寫法。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 40, "pts": 1, "topic": "字串", "q": "下列程式碼的輸出為何？", "code": "s = \"Python\"\nresult = \"\".join([c for c in s if c.isupper()])\nprint(result)", "opts": ["P", "PYTHON", "Python", "ython"], "ans": ["A"], "exp": "串列生成式挑出大寫字元，只有 'P'。join() 把串列元素接成字串，結果是 P。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 1, "n": 41, "pts": 1, "topic": "for / while 迴圈", "q": "下列程式碼的輸出為何？", "code": "i = 1\nwhile i <= 3:\n    print(i, end=\" \")\n    i += 1\nelse:\n    print(\"Done\")", "opts": ["1 2 3", "1 2 3 Done", "Done", "1 2 3 4 Done"], "ans": ["B"], "exp": "while 搭配 else：當迴圈因為條件變成 False 而正常結束（沒有被 break 打斷）時，會執行 else 區塊。所以印出 1 2 3 之後接著印出 Done。若中途有 break，else 就不會執行。（原試卷此題後方多出一行「A. 6 B. 7 C. 10 D. Error」，與本題無關。）", "alt": null, "flaw": null, "note": "原試卷此題選項後方多了一行無關的選項，已省略。", "off": "B"}, {"e": 1, "n": 42, "pts": 1, "topic": "字元與編碼", "q": "下列程式碼的輸出為何？", "code": "def transform(s):\n    result = \"\"\n    for c in s:\n        if c.isupper():\n            result += chr(ord(c) + 32)\n        else:\n            result += c\n    return result\nprint(transform(\"PyThOn\"))", "opts": ["PyThOn", "PYTHON", "python", "pYtHoN"], "ans": ["C"], "exp": "大寫字母的編碼比對應的小寫小 32（'A' = 65、'a' = 97），所以 chr(ord(c) + 32) 把大寫轉成小寫；小寫則原樣保留。P、T、O 被轉換，結果是 python。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 43, "pts": 1, "topic": "函式", "q": "下列程式碼的輸出為何？", "code": "def mystery(func, lst):\n    return [func(x) for x in lst]\nresult = mystery(lambda x: chr(ord(x) - 32), ['a', 'b'])\nprint(result)", "opts": ["['a', 'b']", "['A', 'B']", "[65, 66]", "Error"], "ans": ["B"], "exp": "mystery 會對串列每個元素套用傳入的函式。這個 lambda 把字元編碼減 32，也就是小寫轉大寫：'a'(97) → 'A'(65)，'b' → 'B'。函式本身可以當作參數傳遞。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 44, "pts": 1, "topic": "字元與編碼", "q": "下列程式碼的輸出為何？", "code": "s = \"hello\"\ndiff = ord(s[0]) - ord(s[0].upper())\nnew_char = chr(ord('Z') + diff)\nprint(new_char)", "opts": ["Z", "z", "Y", "a"], "ans": ["B"], "exp": "s[0] 是 'h'，ord('h') = 104，'H' 是 72，diff = 32。chr(ord('Z') + 32) = chr(90 + 32) = chr(122) = 'z'。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 45, "pts": 1, "topic": "條件與布林值", "q": "下列程式碼的輸出為何？", "code": "x = 10\nif x > 5:\n    print(\"A\")\nelse:\n    print(\"B\")\nif x % 2 == 0:\n    print(\"C\")\nelse:\n    print(\"D\")", "opts": ["A C", "A", "B C", "A C"], "ans": ["A"], "exp": "這是兩組各自獨立的 if / else：第一組 x > 5 成立，印出 A；第二組 x 是偶數，印出 C。兩個 print 各占一行，所以輸出為 A 與 C。（原試卷選項 A 與 D 文字相同，答 A 或 D 皆視為正確。）", "alt": [["D"]], "flaw": null, "note": "輸出是兩行；原試卷的選項 A 與 D 文字相同。", "off": "A"}, {"e": 1, "n": 46, "pts": 1, "topic": "切片", "q": "下列程式碼的輸出為何？", "code": "my_string = \"Python\"\nprint(my_string[1:4])", "opts": ["Pyth", "yth", "ytho", "Pyt"], "ans": ["B"], "exp": "切片 [1:4] 取索引 1、2、3（含起點、不含終點）：y、t、h，結果 yth。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 47, "pts": 1, "topic": "串列操作", "q": "下列哪一個方法用來在串列的尾端新增一個元素？", "code": null, "opts": ["append()", "insert()", "add()", "extend()"], "ans": ["A"], "exp": "append() 在串列尾端加入一個元素。insert() 需指定位置；add() 是集合 (set) 的方法；extend() 是把另一個可迭代物件的每個元素逐一加到尾端，不是加入單一元素。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 1, "n": 48, "pts": 1, "topic": "可變性與拷貝", "q": "下列程式碼的輸出為何？", "code": "a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)", "opts": ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 3, [4]]", "Error"], "ans": ["B"], "exp": "b = a 並沒有複製串列，只是讓 b 與 a 指向同一個串列物件。透過 b 做 append，a 看到的是同一個被修改的物件，所以印出 [1, 2, 3, 4]。與第 7 題（使用 a[:] 拷貝）對照。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 49, "pts": 1, "topic": "for / while 迴圈", "q": "如何寫出「只要 x 小於 10 就持續執行」的 while 迴圈？", "code": null, "opts": ["while if x < 10:", "loop x < 10:", "while(x < 10)", "while x < 10:"], "ans": ["D"], "exp": "while 迴圈的語法是 while 條件: （結尾要有冒號）。C 少了冒號，因此是語法錯誤；A 與 B 則使用了不存在的語法。", "alt": null, "flaw": null, "note": null, "off": "D"}, {"e": 1, "n": 50, "pts": 1, "topic": "型別與運算", "q": "print(type(True)) 的輸出為何？", "code": "type(True)", "opts": ["<class 'bool'>", "<class 'int'>", "<class 'str'>", "<class 'NoneType'>"], "ans": ["A"], "exp": "True 與 False 是布林型別 bool。（bool 是 int 的子類別，True 的值等於 1，但 type() 回傳的是 bool。）", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 1, "n": 51, "pts": 1, "topic": "串列操作", "q": "下列哪一個能取得串列 my_list 的元素個數？", "code": null, "opts": ["my_list.size()", "len(my_list)", "my_list.length", "count(my_list)"], "ans": ["B"], "exp": "取得元素個數要用內建函式 len(my_list)。串列沒有 size() 或 length 屬性，count 也不是獨立的內建函式（串列的 count() 方法是計算某個值出現幾次）。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 52, "pts": 1, "topic": "字串", "q": "3 * \"ab\" 的結果為何？", "code": "3 * \"ab\"", "opts": ["Error", "abab", "ababab", "aaabbb"], "ans": ["C"], "exp": "整數乘以字串代表重複該字串，3 * \"ab\" 為 \"ababab\"。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 53, "pts": 1, "topic": "型別與運算", "q": "5 // 2 的輸出為何？", "code": "5 // 2", "opts": ["2.5", "2", "3", "1"], "ans": ["B"], "exp": "// 是整除（無條件捨去的商）：5 ÷ 2 = 2 餘 1，所以 5 // 2 = 2。2.5 是 5 / 2 的結果；餘數則用 %。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 54, "pts": 1, "topic": "串列操作", "q": "下列哪些能建立空串列？（可複選）", "code": null, "opts": ["list()", "{}", "[]", "new list"], "ans": ["A", "C"], "exp": "list() 與 [] 都會建立空串列（本題可複選）。{} 建立的是空字典 (dict)；new list 不是 Python 語法。", "alt": null, "flaw": null, "note": null, "off": "A,C"}, {"e": 1, "n": 55, "pts": 1, "topic": "串列操作", "q": "下列程式碼的輸出為何？", "code": "my_list = [10, 20, 30, 40, 50]\nprint(my_list[-2])", "opts": ["20", "40", "Error", "50"], "ans": ["B"], "exp": "負索引從尾端往前數：-1 是最後一個 (50)，-2 是倒數第二個 (40)。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 56, "pts": 1, "topic": "函式", "q": "若函式沒有 return 語句，預設會回傳什麼？", "code": null, "opts": ["0", "False", "None", "An error"], "ans": ["C"], "exp": "沒有 return 語句的函式，會回傳 None（表示「沒有值」）。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 1, "n": 57, "pts": 1, "topic": "for / while 迴圈", "q": "如何寫出走訪名為 items 的串列中每個元素的 for 迴圈？", "code": null, "opts": ["for each item in items:", "for item in items:", "loop item through items:", "for items(item):"], "ans": ["B"], "exp": "Python 走訪串列的語法是 for 變數 in 可迭代物件:。其他選項（each、loop、items(item)）都不是合法語法。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 58, "pts": 1, "topic": "break / continue", "q": "迴圈中的 break 敘述會做什麼？", "code": null, "opts": ["Skips the current iteration and continues with the next.", "Exits the loop immediately.", "Restarts the loop from the beginning.", "Pauses the loop."], "ans": ["B"], "exp": "break 會立刻結束整個迴圈。A 描述的是 continue；Python 沒有重新開始或暫停迴圈的語句。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 59, "pts": 1, "topic": "函式", "q": "下列程式碼的輸出為何？", "code": "def greet(name=\"World\"):\n    print(f\"Hello, {name}!\")\ngreet(\"Python\")", "opts": ["Hello, World!", "Hello, Python!", "Error", "Hello, name!"], "ans": ["B"], "exp": "呼叫時傳入了 \"Python\"，這會覆蓋預設值 \"World\"。f-string 把 {name} 換成 Python，輸出 Hello, Python!。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 1, "n": 60, "pts": 1, "topic": "for / while 迴圈", "q": "這段程式結束後，x 的值是多少？", "code": "x = 0\nwhile x < 5:\n    x += 1\n    if x == 3:\n        continue\n    print(x)", "opts": ["3", "4", "5", "2"], "ans": ["C"], "exp": "迴圈在 x 小於 5 時繼續，每輪先加 1。x 加到 5 時，5 < 5 不成立，迴圈結束，此時 x 的值是 5。continue 只是跳過 print，不影響 x 的累加。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 1, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "print(\"Hello\", \"World\")", "opts": ["HelloWorld", "Hello World", "Hello, World", "\"Hello\" \"World\""], "ans": ["B"], "exp": "print() 傳入多個引數時，預設以一個空白隔開 (sep 預設是 \" \")，且不會印出引號。所以輸出 Hello World。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 2, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "print(\"Hello\" + \"World\")", "opts": ["HelloWorld", "Hello World", "Hello+World", "Error"], "ans": ["A"], "exp": "+ 對字串是「串接」，不會自動加空白，結果是 HelloWorld。與第 1 題（逗號分隔的多個引數）對照。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 3, "pts": 1, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "print(\"Ha\" * 3)", "opts": ["Ha 3", "Ha * 3", "HaHaHa", "Error"], "ans": ["C"], "exp": "字串乘以整數代表重複，\"Ha\" * 3 為 HaHaHa。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 4, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "print(1, 2, 3, sep=\"-\")", "opts": ["1 2 3", "1-2-3", "1, 2, 3", "Error"], "ans": ["B"], "exp": "sep 參數指定多個引數之間的分隔字元，這裡是 \"-\"，所以輸出 1-2-3。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 5, "pts": 1, "topic": "變數與賦值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 10\nprint(\"x\")", "opts": ["10", "x", "\"x\"", "Error"], "ans": ["B"], "exp": "print(\"x\") 印的是字串 \"x\" 本身（引號內的內容），不是變數 x 的值。要印出變數值要寫 print(x)。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 6, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "print(10 + 20, \"points\")", "opts": ["30 points", "10 + 20 points", "1020 points", "Error"], "ans": ["A"], "exp": "print 的兩個引數：第一個是運算式 10 + 20 = 30（整數），第二個是字串 \"points\"，以空白隔開，輸出 30 points。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 7, "pts": 1, "topic": "型別與運算", "q": "執行下列程式後，x 的資料型別是什麼？", "code": "x = input(\"Enter: \")", "opts": ["int", "float", "str", "Depends on what the user enters"], "ans": ["C"], "exp": "input() 永遠回傳字串 (str)，不論使用者輸入什麼。要當數字使用必須自己轉型，例如 int(input(...))。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 8, "pts": 1, "topic": "變數與賦值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 5\ny = x\nx = 10\nprint(y)", "opts": ["5", "10", "Error", "None"], "ans": ["A"], "exp": "y = x 把 x 當時的值 5 交給 y。之後 x 改為 10，並不會影響 y，所以 y 仍是 5。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 9, "pts": 1, "topic": "變數與賦值", "q": "下列 Python 程式碼的輸出為何？", "code": "a = 3\nb = 4\na, b = b, a\nprint(a, b)", "opts": ["3 4", "4 3", "3 3", "4 4"], "ans": ["B"], "exp": "a, b = b, a 是 Python 的同時賦值，右邊先算出 (4, 3)，再分別指派給 a 與 b，達到交換效果，不需要暫存變數。輸出 4 3。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 10, "pts": 1, "topic": "變數與賦值", "q": "下列何者是合法的 Python 變數名稱？", "code": null, "opts": ["2name", "my-var", "my_var", "class"], "ans": ["C"], "exp": "變數名稱只能由字母、數字與底線組成，且不能以數字開頭，也不能是保留字。2name 以數字開頭；my-var 含有減號（會被當成減法）；class 是保留字；my_var 才合法。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 11, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "x = \"Hello\"\ny = \"World\"\nprint(x, y, sep=\"***\")", "opts": ["Hello World", "Hello***World", "Hello,World", "Error"], "ans": ["B"], "exp": "sep=\"***\" 指定分隔字串，輸出 Hello***World。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 12, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？（假設使用者輸入 5）", "code": "x = input(\"Number: \")\nprint(x * 3)", "opts": ["15", "555", "Error", "x * 3"], "ans": ["B"], "exp": "input 回傳的是字串 \"5\"，字串乘以 3 是重複三次，得到 555（不是數字 15）。這是 input 常見的陷阱。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 13, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？（假設使用者輸入 5）", "code": "x = int(input(\"Number: \"))\nprint(x * 3)", "opts": ["15", "555", "Error", "x * 3"], "ans": ["A"], "exp": "int() 先把輸入的字串 \"5\" 轉成整數 5，再相乘得 15。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 14, "pts": 1, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "x = \"3\"\ny = \"5\"\nprint(x + y)", "opts": ["8", "35", "\"3\" + \"5\"", "Error"], "ans": ["B"], "exp": "兩個都是字串，+ 是串接而不是加法，結果是 35。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 15, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 7\ny = 2\nprint(x // y, x % y)", "opts": ["3.5 0", "3 0", "3 1", "4 1"], "ans": ["C"], "exp": "// 是整除，7 // 2 = 3；% 是取餘數，7 % 2 = 1。輸出 3 1。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 16, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？", "code": "x = int(3.9)\nprint(x)", "opts": ["3", "4", "3.9", "Error"], "ans": ["A"], "exp": "int() 轉換浮點數時是「截去小數」（朝零方向取整），不是四捨五入，所以 int(3.9) = 3。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 17, "pts": 1, "topic": "型別與運算", "q": "下列何者能正確把 \"42\" 轉成整數？", "code": null, "opts": ["integer(\"42\")", "int(\"42\")", "str(42)", "float(\"42\")"], "ans": ["B"], "exp": "把字串轉成整數用 int()。Python 沒有 integer() 這個函式；str(42) 是把數字轉成字串；float(\"42\") 會得到浮點數 42.0。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 18, "pts": 1, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "print(bool(0), bool(\"\"), bool(1))", "opts": ["True True True", "False False True", "False True True", "0 \"\" 1"], "ans": ["B"], "exp": "0 與空字串 \"\" 都被視為 False（假值），非零數值 1 為 True。輸出 False False True。常見的假值還有 None、空串列 []、空字典 {}。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 19, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？", "code": "print(2 ** 3)", "opts": ["6", "8", "23", "Error"], "ans": ["B"], "exp": "** 是次方運算，2 ** 3 = 2³ = 8。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 20, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 17\nprint(x // 5, x % 5)", "opts": ["3 2", "3.4 2", "3 0", "4 2"], "ans": ["A"], "exp": "17 ÷ 5 = 3 餘 2，所以 17 // 5 = 3、17 % 5 = 2。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 21, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 10\nx += 5\nx *= 2\nprint(x)", "opts": ["20", "30", "25", "15"], "ans": ["B"], "exp": "x += 5 使 x 變成 15；x *= 2 使 x 變成 30。複合賦值是依序執行，不是先乘後加。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 22, "pts": 1, "topic": "型別與運算", "q": "下列 Python 程式碼的輸出為何？", "code": "print(float(\"3\") + int(\"2\"))", "opts": ["32", "5.0", "5", "Error"], "ans": ["B"], "exp": "float(\"3\") 是 3.0，int(\"2\") 是 2，相加得 5.0。浮點數與整數相加，結果是浮點數。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 23, "pts": 1, "topic": "型別與運算", "q": "10 / 3 的結果是什麼資料型別？", "code": null, "opts": ["int", "float", "str", "bool"], "ans": ["B"], "exp": "Python 的 / 一律回傳浮點數 (float)，即使能整除也一樣（例如 10 / 2 是 5.0）。要得到整數商請用 //。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 24, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "name = \"Python\"\nprint(f\"I love {name}!\")", "opts": ["I love {name}!", "I love name!", "I love Python!", "Error"], "ans": ["C"], "exp": "f-string 會把大括號 {} 內的運算式換成它的值，所以輸出 I love Python!。如果少了前面的 f，才會原樣印出 {name}。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 25, "pts": 1, "topic": "切片", "q": "下列 Python 程式碼的輸出為何？", "code": "text = \"Hello World\"\nprint(text[0:5])", "opts": ["Hello", "Hello W", "Hell", "Hello World"], "ans": ["A"], "exp": "切片 [0:5] 取索引 0 到 4（含起點、不含終點），即 H-e-l-l-o。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 26, "pts": 1, "topic": "切片", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"abcdef\"\nprint(s[-2])", "opts": ["f", "e", "d", "Error"], "ans": ["B"], "exp": "負索引從尾端算起：-1 是 f，-2 是 e。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 27, "pts": 1, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"Hello World\"\nprint(s.upper())", "opts": ["HELLO WORLD", "hello world", "Hello World", "Error"], "ans": ["A"], "exp": "upper() 把所有字母轉成大寫，輸出 HELLO WORLD。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 28, "pts": 1, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"banana\"\nprint(s.replace(\"a\", \"o\"))", "opts": ["bonana", "bonono", "banana", "Error"], "ans": ["B"], "exp": "replace(\"a\", \"o\") 會把所有的 a 換成 o（不是只換第一個），banana → bonono。若只想換一次，可加第三個參數 count，例如 replace(\"a\", \"o\", 1)。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 29, "pts": 1, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"Hello World\"\nprint(s.count(\"l\"))", "opts": ["2", "3", "1", "0"], "ans": ["B"], "exp": "Hello 有兩個 l，World 有一個 l，總共 3 個。count() 區分大小寫。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 30, "pts": 1, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"apple,banana,cherry\"\nresult = s.split(\",\")\nprint(result)", "opts": ["['apple', 'banana', 'cherry']", "apple banana cherry", "('apple', 'banana', 'cherry')", "Error"], "ans": ["A"], "exp": "split(\",\") 以逗號切開字串，回傳串列 (list)，不是元組 (tuple)。印出串列時會顯示方括號與引號。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 31, "pts": 1, "topic": "輸出與 f-string", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 3.14159\nprint(f\"{x:.2f}\")", "opts": ["3.14159", "3.14", "3.1", "Error"], "ans": ["B"], "exp": "格式 :.2f 代表保留兩位小數的浮點數（會四捨五入），輸出 3.14。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 32, "pts": 2, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"Python\"\nprint(len(s))", "opts": ["5", "6", "7", "Error"], "ans": ["B"], "exp": "len() 回傳字元個數：P、y、t、h、o、n 共 6 個。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 33, "pts": 2, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"hello123\"\nprint(s.isdigit(), s.isalpha())", "opts": ["True True", "True False", "False False", "False True"], "ans": ["C"], "exp": "isdigit() 要求全部是數字，isalpha() 要求全部是字母。\"hello123\" 同時含有字母與數字，所以兩者都是 False。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 34, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 15\nif x > 10:\n    print(\"High\")\nelif x > 5:\n    print(\"Medium\")\nelse:\n    print(\"Low\")", "opts": ["High", "Medium", "Low", "High Medium"], "ans": ["A"], "exp": "15 > 10 成立，印出 High；其餘分支不會再檢查。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 35, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 5\ny = 10\nif x > 3 and y < 8:\n    print(\"A\")\nelif x > 3 or y < 8:\n    print(\"B\")\nelse:\n    print(\"C\")", "opts": ["A", "B", "C", "A B"], "ans": ["B"], "exp": "第一個條件用 and：x > 3 為 True，但 y < 8 為 False，整體為 False。接著檢查 elif：用 or，只要有一邊成立即可，x > 3 成立，所以印出 B。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 36, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 0\nif x:\n    print(\"True\")\nelse:\n    print(\"False\")", "opts": ["True", "False", "0", "Error"], "ans": ["B"], "exp": "if x: 會把 x 當成布林值判斷，0 是假值，所以執行 else 印出 False（印的是字串 \"False\"）。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 37, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "score = 75\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelif score >= 60:\n    grade = \"D\"\nelse:\n    grade = \"F\"\nprint(grade)", "opts": ["B", "C", "D", "A"], "ans": ["B"], "exp": "由上往下依序檢查：75 不是 ≥ 90、不是 ≥ 80，但 ≥ 70 成立，所以 grade = \"C\"，後面的條件不會再執行。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 38, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 7\nif not x > 10:\n    print(\"Small\")\nelse:\n    print(\"Large\")", "opts": ["Small", "Large", "Error", "True"], "ans": ["A"], "exp": "x > 10 為 False，not 取反後為 True，所以印出 Small。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 39, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "age = 20\nhas_id = False\nif age >= 18 and has_id:\n    print(\"OK\")\nelse:\n    print(\"NO\")", "opts": ["OK", "NO", "Error", "True"], "ans": ["B"], "exp": "and 需要兩邊都成立：age >= 18 為 True，但 has_id 為 False，整體 False，執行 else 印出 NO。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 40, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = 4\nif x % 2 == 0:\n    if x % 4 == 0:\n        print(\"A\")\n    else:\n        print(\"B\")\nelse:\n    print(\"C\")", "opts": ["A", "B", "C", "A B"], "ans": ["A"], "exp": "4 是偶數，進入外層 if；接著 4 % 4 == 0 成立，印出 A。注意縮排決定 else 屬於哪個 if。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 41, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "num = -5\nresult = \"positive\" if num > 0 else \"non-positive\"\nprint(result)", "opts": ["positive", "non-positive", "Error", "-5"], "ans": ["B"], "exp": "這是條件運算式（三元運算式）：值 if 條件 else 另一個值。-5 > 0 為 False，取 else 後面的 \"non-positive\"。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 42, "pts": 2, "topic": "條件與布林值", "q": "下列 Python 程式碼的輸出為何？", "code": "x = \"\"\nif x:\n    print(\"not empty\")\nelse:\n    print(\"empty\")", "opts": ["not empty", "empty", "Error", "\"\""], "ans": ["B"], "exp": "空字串是假值，if x 不成立，執行 else 印出 empty。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 43, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\nprint(fruits[1])", "opts": ["apple", "banana", "cherry", "Error"], "ans": ["B"], "exp": "索引從 0 開始，fruits[1] 是第二個元素 banana。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 44, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "nums = [1, 2, 3, 4, 5]\nnums.append(6)\nnums.pop(0)\nprint(nums)", "opts": ["[1, 2, 3, 4, 5, 6]", "[2, 3, 4, 5, 6]", "[1, 2, 3, 4, 6]", "[6, 2, 3, 4, 5]"], "ans": ["B"], "exp": "append(6) 在尾端加入 6；pop(0) 移除索引 0 的元素 1，結果為 [2, 3, 4, 5, 6]。pop() 不帶參數時才是移除最後一個。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 45, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "colors = [\"red\", \"green\", \"blue\"]\nprint(\"green\" in colors)", "opts": ["True", "False", "1", "\"green\""], "ans": ["A"], "exp": "in 運算子檢查元素是否存在於串列中，回傳布林值，\"green\" 在串列內，所以是 True。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 46, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "nums = [3, 1, 4, 1, 5]\nnums.sort()\nprint(nums[-1])", "opts": ["1", "3", "5", "4"], "ans": ["C"], "exp": "sort() 後串列為 [1, 1, 3, 4, 5]，[-1] 取最後一個，即最大值 5。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 47, "pts": 2, "topic": "可變性與拷貝", "q": "下列 Python 程式碼的輸出為何？", "code": "a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)", "opts": ["[1, 2, 3]", "[1, 2, 3, 4]", "[4, 1, 2, 3]", "Error"], "ans": ["B"], "exp": "b = a 只是讓 b 指向同一個串列（別名），沒有複製。透過 b 新增元素，a 也會看到，所以 a 變成 [1, 2, 3, 4]。要獨立的副本應使用 a.copy() 或 a[:]。注意與第 8 題的差別：整數是不可變的，串列是可變的。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 48, "pts": 2, "topic": "切片", "q": "下列 Python 程式碼的輸出為何？", "code": "nums = [10, 20, 30, 40, 50]\nprint(nums[1:4])", "opts": ["[10, 20, 30, 40]", "[20, 30, 40]", "[20, 30]", "[10, 20, 30]"], "ans": ["B"], "exp": "切片 [1:4] 取索引 1、2、3（含起點、不含終點），即 [20, 30, 40]。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 49, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "items = [\"a\", \"b\", \"c\"]\nitems.insert(1, \"x\")\nprint(items)", "opts": ["['x', 'a', 'b', 'c']", "['a', 'x', 'b', 'c']", "['a', 'b', 'x', 'c']", "['a', 'b', 'c', 'x']"], "ans": ["B"], "exp": "insert(位置, 值) 在指定索引處插入，原本在該位置及其後的元素往後挪。insert(1, \"x\") 插在索引 1，結果 ['a', 'x', 'b', 'c']。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 50, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "nums = [5, 3, 8, 1]\nnums.sort(reverse=True)\nprint(nums[0])", "opts": ["1", "5", "8", "3"], "ans": ["C"], "exp": "由大到小排序後為 [8, 5, 3, 1]，索引 0 是最大值 8。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 51, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "nums = [1, 2, 2, 3, 3, 3]\nprint(nums.count(3))", "opts": ["1", "2", "3", "6"], "ans": ["C"], "exp": "count(3) 計算 3 出現的次數，共 3 次。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 52, "pts": 2, "topic": "串列操作", "q": "下列 Python 程式碼的輸出為何？", "code": "data = [1, 2, 3]\ndata.remove(2)\ndata.append(4)\nprint(len(data))", "opts": ["2", "3", "4", "Error"], "ans": ["B"], "exp": "remove(2) 移除值為 2 的元素，剩 [1, 3]；append(4) 加入 4，變 [1, 3, 4]，長度為 3。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 53, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "for i in range(3):\n    print(i, end=\" \")", "opts": ["1 2 3", "0 1 2", "0 1 2 3", "1 2"], "ans": ["B"], "exp": "range(3) 產生 0、1、2；end=\" \" 讓輸出接在同一行。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 54, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "total = 0\nnums = [10, 20, 30]\nfor n in nums:\n    total += n\nprint(total)", "opts": ["10", "30", "60", "[10, 20, 30]"], "ans": ["C"], "exp": "累加：0 + 10 + 20 + 30 = 60。這是「累加器 (accumulator)」的標準寫法。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 55, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "result = []\nfor i in range(1, 6):\n    if i % 2 == 0:\n        result.append(i)\nprint(result)", "opts": ["[1, 3, 5]", "[2, 4]", "[2, 4, 6]", "[1, 2, 3, 4, 5]"], "ans": ["B"], "exp": "range(1, 6) 是 1 到 5，其中偶數是 2、4，被加入 result。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 56, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "for i in range(2, 10, 3):\n    print(i, end=\" \")", "opts": ["2 3 4 5 6 7 8 9", "2 5 8", "2 4 6 8", "3 6 9"], "ans": ["B"], "exp": "range(起點, 終點, 步長)：從 2 開始，每次加 3，直到小於 10：2、5、8；下一個 11 已超過範圍。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 57, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "words = [\"Hi\", \"Hello\", \"Hey\"]\nfor w in words:\n    print(len(w), end=\" \")", "opts": ["Hi Hello Hey", "2 5 3", "3 3 3", "3"], "ans": ["B"], "exp": "印出的是各字串的長度：\"Hi\" = 2、\"Hello\" = 5、\"Hey\" = 3。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 58, "pts": 2, "topic": "zip / enumerate", "q": "下列 Python 程式碼的輸出為何？", "code": "s = \"abc\"\nfor i, ch in enumerate(s):\n    print(i, ch)", "opts": ["1 a\n2 b\n3 c", "0 a\n1 b\n2 c", "a b c", "Error"], "ans": ["B"], "exp": "enumerate 預設從 0 開始計數，同時給出索引與元素：0 a、1 b、2 c，每個 print 各占一行。要從 1 開始可寫 enumerate(s, 1)。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 59, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "count = 0\nfor i in range(1, 11):\n    if i % 3 == 0:\n        count += 1\nprint(count)", "opts": ["2", "3", "4", "10"], "ans": ["B"], "exp": "1 到 10 中能被 3 整除的有 3、6、9，共 3 個。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 60, "pts": 2, "topic": "for / while 迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "nums = [4, 7, 2, 9, 1]\nbiggest = nums[0]\nfor n in nums:\n    if n > biggest:\n        biggest = n\nprint(biggest)", "opts": ["4", "1", "9", "7"], "ans": ["C"], "exp": "這是「找最大值」的標準流程：先假設第一個為最大，逐一比較，遇到更大的就更新。最後 biggest 為 9。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 61, "pts": 2, "topic": "for / while 迴圈", "q": "下列迴圈會執行幾次 print？", "code": "for i in range(5, 0, -1):\n    print(i)", "opts": ["4", "5", "6", "0 (does not print)"], "ans": ["B"], "exp": "range(5, 0, -1) 是 5、4、3、2、1（終點 0 不含），共 5 個數，所以 print 執行 5 次。步長為負數時代表倒數。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 62, "pts": 2, "topic": "字串", "q": "下列 Python 程式碼的輸出為何？", "code": "text = \"Hello\"\nresult = \"\"\nfor ch in text:\n    result = ch + result\nprint(result)", "opts": ["Hello", "olleH", "HHeHelHelHello", "Error"], "ans": ["B"], "exp": "每次把新字元放在 result 的「前面」：H → eH → leH → lleH → olleH，結果是反轉的字串 olleH。若寫成 result + ch 則維持原順序。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 63, "pts": 2, "topic": "巢狀迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "for i in range(2):\n    for j in range(3):\n        print(\"*\", end=\"\")\n    print()", "opts": ["**", "***\n***", "******", "**\n**\n**"], "ans": ["B"], "exp": "外層執行 2 次，每次內層印出 3 個 *（end=\"\" 不換行），內層結束後 print() 換行。所以是 2 列、每列 3 個 *。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 64, "pts": 2, "topic": "巢狀迴圈", "q": "下列程式中 print 會執行幾次？", "code": "for i in range(3):\n    for j in range(4):\n        print(i, j)", "opts": ["7", "4", "12", "3"], "ans": ["C"], "exp": "巢狀迴圈的執行次數是外層次數 × 內層次數：3 × 4 = 12。", "alt": null, "flaw": null, "note": null, "off": "C"}, {"e": 2, "n": 65, "pts": 2, "topic": "巢狀迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "for i in range(1, 4):\n    print(\"*\" * i)", "opts": ["*\n**\n***", "***\n**\n*", "* * *", "******"], "ans": ["A"], "exp": "i 從 1 到 3，每次印出 i 個 *，所以第 1 列 1 個、第 2 列 2 個、第 3 列 3 個，形成遞增的三角形。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 66, "pts": 2, "topic": "巢狀迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "total = 0\nfor i in range(1, 4):\n    for j in range(1, 4):\n        if i == j:\n            total += 1\nprint(total)", "opts": ["9", "3", "6", "0"], "ans": ["B"], "exp": "i 與 j 各從 1 到 3，共 9 組配對，其中 i == j 的只有 (1,1)、(2,2)、(3,3) 三組，所以 total = 3。", "alt": null, "flaw": null, "note": null, "off": "B"}, {"e": 2, "n": 67, "pts": 2, "topic": "巢狀迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "for i in range(3):\n    for j in range(i + 1):\n        print(j, end=\"\")\n    print()", "opts": ["0\n01\n012", "0\n00\n000", "1\n12\n123", "0\n10\n210"], "ans": ["A"], "exp": "內層的 range(i + 1) 會隨 i 變長：i = 0 時 j 只有 0，印 0；i = 1 時 j = 0、1，印 01；i = 2 時印 012。印的是 j（而不是 i）。", "alt": null, "flaw": null, "note": null, "off": "A"}, {"e": 2, "n": 68, "pts": 2, "topic": "巢狀迴圈", "q": "下列 Python 程式碼的輸出為何？", "code": "matrix = [[1, 2], [3, 4], [5, 6]]\ntotal = 0\nfor row in matrix:\n    for val in row:\n        total += val\nprint(total)", "opts": ["15", "21", "6", "[1, 2, 3, 4, 5, 6]"], "ans": ["B"], "exp": "外層逐列取出 [1, 2]、[3, 4]、[5, 6]，內層逐一累加，總和為 1 + 2 + 3 + 4 + 5 + 6 = 21。", "alt": null, "flaw": null, "note": null, "off": "B"}];
+const EX={1:{label:'114-1 期中考',date:'2025/10/7',pts:60},2:{label:'114-2 Exam 1',date:'2026/3/24',pts:105}};
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const qid=q=>q.e+'-'+q.n, BYID={}; DATA.forEach(q=>BYID[qid(q)]=q);
+const LET='ABCDE';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let wrong=new Set();
+try{wrong=new Set(JSON.parse(localStorage.getItem('pyquiz-wrong')||'[]').filter(k=>BYID[k]))}catch(e){}
+function saveWrong(){try{localStorage.setItem('pyquiz-wrong',JSON.stringify(Array.from(wrong)))}catch(e){} $('#st-wrong').textContent=wrong.size}
+
+const KW=new Set('and as break class continue def del elif else except finally for from global if import in is lambda None nonlocal not or pass raise return try while with True False'.split(' '));
+const BI=new Set('print len range input int float str bool list sorted enumerate zip sum chr ord type'.split(' '));
+function hl(code){
+  const re=/("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|(#[^\n]*)|([A-Za-z_][A-Za-z0-9_]*)|(\d+(?:\.\d+)?)/g;
+  let out='',last=0,m;
+  while((m=re.exec(code))){
+    out+=esc(code.slice(last,m.index));
+    if(m[1])out+='<span class="t-s">'+esc(m[1])+'</span>';
+    else if(m[2])out+='<span class="t-c">'+esc(m[2])+'</span>';
+    else if(m[3])out+=KW.has(m[3])?'<span class="t-k">'+m[3]+'</span>':BI.has(m[3])?'<span class="t-b">'+m[3]+'</span>':m[3];
+    else out+='<span class="t-n">'+m[4]+'</span>';
+    last=re.lastIndex;
+  }
+  return out+esc(code.slice(last));
+}
+const sameSet=(a,b)=>a.length===b.length&&a.every(x=>b.includes(x));
+function isRight(q,sel){return sameSet(sel,q.ans)||(q.alt||[]).some(s=>sameSet(sel,s))}
+const exTag=q=>'<span class="tag ex">'+EX[q.e].label+' 第 '+q.n+' 題</span>';
+
+/* ---------- tabs ---------- */
+function showTab(name){
+  const quiz=name==='quiz';
+  $('#tab-quiz').setAttribute('aria-selected',quiz);$('#tab-review').setAttribute('aria-selected',!quiz);
+  $('#view-quiz').hidden=!quiz;$('#view-review').hidden=quiz;
+  if(!quiz)renderReview();
+  window.scrollTo(0,0);
+}
+$('#tab-quiz').onclick=()=>showTab('quiz');$('#tab-review').onclick=()=>showTab('review');
+
+/* ---------- practice ---------- */
+let S={pool:[],i:0,ans:{},done:false,scope:'all'};
+let setupState={exam:'all',topics:[],order:'orig',scope:'all'};
+function topicsFor(exam){
+  const m=new Map();
+  DATA.filter(q=>exam==='all'||String(q.e)===exam).forEach(q=>m.set(q.topic,(m.get(q.topic)||0)+1));
+  return Array.from(m.entries());
+}
+function poolFromSetup(){
+  const st=setupState;
+  let p=DATA.filter(q=>st.exam==='all'||String(q.e)===st.exam);
+  if(st.topics.length)p=p.filter(q=>st.topics.includes(q.topic));
+  if(st.scope==='wrong')p=p.filter(q=>wrong.has(qid(q)));
+  return p;
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function renderQuiz(){
+  const el=$('#view-quiz');
+  if(!S.pool.length)return renderSetup(el);
+  if(S.done)return renderSummary(el);
+  renderQuestion(el);
+}
+function renderSetup(el){
+  const st=setupState, tps=topicsFor(st.exam);
+  st.topics=st.topics.filter(t=>tps.some(x=>x[0]===t));
+  const n=poolFromSetup().length;
+  const radio=(name,val,label,checked,extra)=>'<label class="chip"><input type="radio" name="'+name+'" value="'+val+'"'+(checked?' checked':'')+'><span>'+label+(extra||'')+'</span></label>';
+  el.innerHTML='<div class="card setup">'+
+   '<fieldset><legend>試卷</legend><div class="chips">'+
+     radio('exam','all','兩份合併',st.exam==='all','<small>128 題</small>')+
+     radio('exam','1','114-1 期中考',st.exam==='1','<small>60 題</small>')+
+     radio('exam','2','114-2 Exam 1',st.exam==='2','<small>68 題</small>')+
+   '</div></fieldset>'+
+   '<fieldset><legend>主題（不選代表全部）</legend><div class="chips">'+
+     tps.map(t=>'<label class="chip topic-chip"><input type="checkbox" value="'+esc(t[0])+'"'+(st.topics.includes(t[0])?' checked':'')+'><span>'+esc(t[0])+'<small>'+t[1]+'</small></span></label>').join('')+
+   '</div><button class="linkish" id="clr-topics" type="button">清除主題選擇</button></fieldset>'+
+   '<div class="row" style="justify-content:flex-start;gap:12px 40px">'+
+   '<fieldset><legend>題目範圍</legend><div class="chips">'+
+     radio('scope','all','全部題目',st.scope==='all')+
+     radio('scope','wrong','只做錯題本（'+wrong.size+' 題）',st.scope==='wrong')+
+   '</div></fieldset>'+
+   '<fieldset><legend>順序</legend><div class="chips">'+
+     radio('order','orig','照試卷順序',st.order==='orig')+radio('order','random','隨機',st.order==='random')+
+   '</div></fieldset></div>'+
+   '<div class="row"><div class="count">本次共 <b>'+n+'</b> 題</div><button class="btn accent" id="go"'+(n?'':' disabled')+'>開始練習</button></div>'+
+  '</div>';
+  $$('input[name=exam]',el).forEach(i=>i.onchange=()=>{st.exam=i.value;renderSetup(el)});
+  $$('input[name=scope]',el).forEach(i=>i.onchange=()=>{st.scope=i.value;renderSetup(el)});
+  $$('input[name=order]',el).forEach(i=>i.onchange=()=>{st.order=i.value});
+  $$('.topic-chip input',el).forEach(i=>i.onchange=()=>{st.topics=$$('.topic-chip input:checked',el).map(x=>x.value);renderSetup(el)});
+  $('#clr-topics').onclick=()=>{st.topics=[];renderSetup(el)};
+  $('#go').onclick=()=>{let p=poolFromSetup();if(st.order==='random')p=shuffle(p);S={pool:p,i:0,ans:{},done:false,scope:st.scope};renderQuiz();window.scrollTo(0,0)};
+}
+let staged=[];
+function optsHtml(q,ans,review){
+  const chosen=ans||staged;
+  return '<ul class="opts" role="list">'+q.opts.map((o,k)=>{
+    const L=LET[k];let cls='opt',mark='';
+    const right=q.ans.includes(L)||(q.alt||[]).some(s=>s.includes(L)&&review!==false&&(ans||review));
+    if(ans||review){
+      if(q.ans.includes(L)||((q.alt||[]).some(s=>s.includes(L)))){cls+=' ok';mark='正確答案'}
+      if(ans&&ans.includes(L)&&!(q.ans.includes(L)||(q.alt||[]).some(s=>s.includes(L)))){cls+=' no';mark='你的答案'}
+      else if(ans&&ans.includes(L)&&cls.includes('ok'))mark='你的答案 ✓';
+    }else if(chosen.includes(L))cls+=' sel';
+    if(q.flaw&&k===4)cls+=' sup';
+    const tag=review?'div':'button';
+    return '<li><'+tag+' class="'+cls+'"'+(review?'':' data-l="'+L+'"'+(ans?' disabled':''))+'><span class="l">'+L+'</span><span class="t">'+esc(o)+'</span><span class="m">'+mark+'</span></'+tag+'></li>';
+  }).join('')+'</ul>';
+}
+function offText(q){return q.off==='無解'?'無解（原選項皆不正確）':q.off.replace(',','、')}
+function fbHtml(q,sel){
+  const ok=isRight(q,sel);
+  const corr=q.ans.join('、');
+  return '<div class="fb'+(ok?'':' bad')+'" role="status" aria-live="polite"><h3>'+(ok?'答對了':'答錯了，正確答案是 '+corr)+'</h3><p>'+esc(q.exp)+'</p>'+
+   '<p class="off">官方解答：<b>'+esc(offText(q))+'</b></p>'+
+   (q.flaw?'<p class="flag"><b>題目疑義：</b>'+esc(q.flaw)+'</p>':'')+
+   (q.note&&!q.flaw?'<p class="flag">'+esc(q.note)+'</p>':'')+'</div>';
+}
+function qBody(q){return (q.q?'<p class="prompt">'+esc(q.q)+'</p>':'')+(q.code?'<pre class="code">'+hl(q.code)+'</pre>':'')}
+function renderQuestion(el){
+  const q=S.pool[S.i],id=qid(q),ans=S.ans[id];
+  const answered=Object.keys(S.ans).length, total=S.pool.length;
+  const multi=q.ans.length>1;
+  el.innerHTML='<div class="card">'+
+   '<div class="prog"><span>已作答 '+answered+' / '+total+'</span><div class="bar"><i style="width:'+(answered/total*100)+'%"></i></div><span>第 '+(S.i+1)+' 題</span></div>'+
+   '<div class="qhead"><span class="qno">'+EX[q.e].label.replace('Exam 1','Exam 1')+' · 第 '+q.n+' 題</span><span class="tag">'+esc(q.topic)+'</span><span class="tag">'+q.pts+' 分</span>'+(multi?'<span class="tag" style="color:var(--accent);border-color:var(--accent)">可複選</span>':'')+'</div>'+
+   qBody(q)+optsHtml(q,ans)+
+   (ans?fbHtml(q,ans):(multi?'<div style="margin-bottom:16px"><button class="btn" id="confirm"'+(staged.length?'':' disabled')+'>確認答案</button></div>':''))+
+   '<div class="nav"><div class="grp"><button class="btn ghost" id="prev"'+(S.i?'':' disabled')+'>上一題</button>'+
+   '<button class="btn" id="next"'+(ans?'':' disabled')+'>'+(S.i===total-1?'看成績':'下一題')+'</button></div>'+
+   '<button class="linkish" id="finish">結束並看成績</button></div>'+
+   '<p class="hint">鍵盤：<kbd>A</kbd>–<kbd>E</kbd> 作答，<kbd>Enter</kbd> 下一題，<kbd>←</kbd> 上一題</p></div>';
+  $$('.opt[data-l]',el).forEach(b=>b.onclick=()=>pick(b.dataset.l));
+  const c=$('#confirm');if(c)c.onclick=()=>commit(staged.slice());
+  $('#prev').onclick=goPrev;$('#next').onclick=goNext;$('#finish').onclick=()=>{S.done=true;renderQuiz();window.scrollTo(0,0)};
+}
+function pick(L){
+  const q=S.pool[S.i];if(S.ans[qid(q)])return;
+  if(q.ans.length>1){staged=staged.includes(L)?staged.filter(x=>x!==L):staged.concat(L).sort();renderQuiz()}
+  else commit([L]);
+}
+function commit(sel){
+  const q=S.pool[S.i],id=qid(q);if(S.ans[id]||!sel.length)return;
+  S.ans[id]=sel;staged=[];
+  if(isRight(q,sel)){if(S.scope==='wrong')wrong.delete(id)}else wrong.add(id);
+  saveWrong();renderQuiz();
+}
+function goPrev(){if(S.i>0){S.i--;staged=[];renderQuiz();window.scrollTo(0,0)}}
+function goNext(){
+  const q=S.pool[S.i];if(!S.ans[qid(q)])return;
+  staged=[];
+  if(S.i<S.pool.length-1)S.i++;else S.done=true;
+  renderQuiz();window.scrollTo(0,0);
+}
+document.addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  if($('#view-quiz').hidden||!S.pool.length||S.done)return;
+  if(/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))return;
+  const q=S.pool[S.i];const k=e.key;
+  const idx=LET.indexOf(k.toUpperCase());
+  if(k.length===1&&idx>=0&&idx<q.opts.length){pick(LET[idx]);e.preventDefault()}
+  else if(k==='Enter'){ if(!S.ans[qid(q)]&&q.ans.length>1&&staged.length)commit(staged.slice()); else goNext(); e.preventDefault()}
+  else if(k==='ArrowRight'){goNext()}
+  else if(k==='ArrowLeft'){goPrev()}
+});
+function renderSummary(el){
+  const pool=S.pool;let right=0,pts=0,ptsAll=0,answered=0;
+  const byTopic={};const wrongList=[];
+  pool.forEach(q=>{
+    const id=qid(q),a=S.ans[id];ptsAll+=q.pts;
+    const t=byTopic[q.topic]||(byTopic[q.topic]={n:0,r:0});t.n++;
+    if(a){answered++;if(isRight(q,a)){right++;pts+=q.pts;t.r++}else wrongList.push(q)}
+  });
+  const skipped=pool.length-answered;const mixed=new Set(pool.map(q=>q.e)).size>1;
+  const pct=Math.round(right/pool.length*100);
+  const rows=Object.entries(byTopic).sort((a,b)=>(a[1].r/a[1].n)-(b[1].r/b[1].n)).map(([k,v])=>
+    '<tr><td>'+esc(k)+'</td><td class="n">'+v.r+' / '+v.n+'</td><td style="width:38%"><div class="bar"><i style="width:'+(v.r/v.n*100)+'%"></i></div></td></tr>').join('');
+  el.innerHTML='<div class="card">'+
+   '<div class="score"><div class="big">'+pct+'<small>%</small></div><div><p>答對 '+right+' / '+pool.length+' 題，得 '+pts+' / '+ptsAll+' 分'+(skipped?'，另有 '+skipped+' 題未作答':'')+'</p></div></div>'+
+   '<h2 class="sec">各主題答對率（由低到高）</h2><table class="tbl"><thead><tr><th>主題</th><th>答對</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
+   (wrongList.length?'<h2 class="sec">本次答錯的題目</h2><div class="pills">'+wrongList.map(q=>'<button class="pill" data-id="'+qid(q)+'">'+(mixed?(q.e===1?'114-1 ':'114-2 '):'')+'第 '+q.n+' 題</button>').join('')+'</div>':'<p>本次沒有答錯的題目。</p>')+
+   '<div class="row"><div class="grp" style="display:flex;gap:10px;flex-wrap:wrap">'+
+   (wrongList.length?'<button class="btn accent" id="redo">重做本次錯題</button>':'')+
+   '<button class="btn ghost" id="back">回到題目</button></div><button class="btn ghost" id="again">重新設定</button></div></div>';
+  $$('.pill',el).forEach(b=>b.onclick=()=>{S.i=S.pool.findIndex(q=>qid(q)===b.dataset.id);S.done=false;renderQuiz();window.scrollTo(0,0)});
+  const r=$('#redo');if(r)r.onclick=()=>{S={pool:wrongList.slice(),i:0,ans:{},done:false,scope:'wrong'};renderQuiz();window.scrollTo(0,0)};
+  $('#back').onclick=()=>{S.done=false;S.i=Math.min(S.i,pool.length-1);renderQuiz()};
+  $('#again').onclick=()=>{S={pool:[],i:0,ans:{},done:false,scope:'all'};renderQuiz();window.scrollTo(0,0)};
+}
+
+/* ---------- review ---------- */
+let rf={exam:'all',topic:'all',q:'',wrong:false};
+function renderReview(){
+  const el=$('#view-review');
+  const tps=Array.from(new Set(DATA.map(q=>q.topic)));
+  el.innerHTML='<div class="filters">'+
+   '<label>試卷<select id="rf-exam"><option value="all">兩份</option><option value="1">114-1 期中考</option><option value="2">114-2 Exam 1</option></select></label>'+
+   '<label>主題<select id="rf-topic"><option value="all">全部主題</option>'+tps.map(t=>'<option>'+esc(t)+'</option>').join('')+'</select></label>'+
+   '<label style="flex:1 1 180px">搜尋<input type="search" id="rf-q" placeholder="關鍵字，例如 append、break"></label>'+
+   '<label class="chip" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="rf-wrong"><span>只看錯題本</span></label>'+
+   '<button class="btn ghost" id="rf-open" type="button">全部展開</button><button class="btn ghost" id="rf-close" type="button">全部收合</button>'+
+  '</div><div id="rv-count" class="count" style="margin-bottom:10px"></div><div id="rv-list"></div>';
+  $('#rf-exam').value=rf.exam;$('#rf-topic').value=rf.topic;$('#rf-q').value=rf.q;$('#rf-wrong').checked=rf.wrong;
+  const upd=()=>{rf={exam:$('#rf-exam').value,topic:$('#rf-topic').value,q:$('#rf-q').value,wrong:$('#rf-wrong').checked};drawReview()};
+  ['rf-exam','rf-topic','rf-wrong'].forEach(i=>$('#'+i).onchange=upd);$('#rf-q').oninput=upd;
+  $('#rf-open').onclick=()=>$$('#rv-list details').forEach(d=>d.open=true);
+  $('#rf-close').onclick=()=>$$('#rv-list details').forEach(d=>d.open=false);
+  drawReview();
+}
+function drawReview(){
+  const kw=rf.q.trim().toLowerCase();
+  const list=DATA.filter(q=>(rf.exam==='all'||String(q.e)===rf.exam)&&(rf.topic==='all'||q.topic===rf.topic)&&(!rf.wrong||wrong.has(qid(q)))&&
+    (!kw||(q.q+' '+(q.code||'')+' '+q.opts.join(' ')+' '+q.exp+' '+q.topic).toLowerCase().includes(kw)));
+  $('#rv-count').innerHTML='符合 <b>'+list.length+'</b> 題';
+  $('#rv-list').innerHTML=list.length?list.map(q=>{
+    const first=(q.code?q.code.split('\n')[0]:q.q);
+    return '<details class="rv"><summary>'+exTag(q)+'<span class="tag">'+esc(q.topic)+'</span>'+(wrong.has(qid(q))?'<span class="wr">錯題本</span>':'')+'<span class="sm">'+esc(first)+'</span></summary><div class="body">'+
+      '<p class="prompt" style="margin-top:12px">'+esc(q.q)+(q.ans.length>1?'（可複選）':'')+'</p>'+(q.code?'<pre class="code">'+hl(q.code)+'</pre>':'')+optsHtml(q,null,true)+
+      '<div class="fb"><h3>答案：'+q.ans.join('、')+(q.alt&&q.alt.length?'（'+q.alt.map(s=>s.join('、')).join('、')+' 亦視為正確）':'')+'</h3><p>'+esc(q.exp)+'</p><p class="off">官方解答：<b>'+esc(offText(q))+'</b></p>'+(q.flaw?'<p class="flag"><b>題目疑義：</b>'+esc(q.flaw)+'</p>':'')+(q.note&&!q.flaw?'<p class="flag">'+esc(q.note)+'</p>':'')+'</div></div></details>';
+  }).join(''):'<div class="empty">沒有符合的題目。</div>';
+}
+
+$('#st-total').textContent=DATA.length;$('#st-wrong').textContent=wrong.size;
+renderQuiz();
+</script>
+
+</body></html>
